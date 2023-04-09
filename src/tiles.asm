@@ -8,27 +8,27 @@ TileMapYSize = 22
 
 * = $010000
 TileMapLayer0
-.include "tile_data/TopLayer.txm"
+.include "../tile_data/TopLayer.txm"
 
 
 * = $010A00
 TileMapLayer1
-.include "tile_data/Paralax1.txm"
+.include "../tile_data/Paralax1.txm"
 
 * = $011400
 TileMapLayer2
-.include "tile_data/Paralax2.txm"
+.include "../tile_data/Paralax2.txm"
 
 ; $012000 - $38FFF (Size: 0x27000) 156K
 
 * = $012000
 TileSetData
-.binary "tile_data/VICKY_II_Tile_Export.tiles_Modded.bin"
+.binary "../tile_data/out.bin" ;tile_data/VICKY_II_Tile_Export.tiles_Modded.bin"
 
 ; In the CPU Memory Zone
 * = $EF00
 TileMapPalette
-.binary "tile_data/VICKY_II_Tile_Export.tiles_Modded.pal.bin" 
+.binary "../tile_data/VICKY_II_Tile_Export.tiles_Modded.pal.bin" 
 
 ; Start of actual tile demo code
 
