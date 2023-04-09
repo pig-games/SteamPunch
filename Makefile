@@ -15,10 +15,12 @@ SRC = 	src/main.asm \
 		src/defs/interrupt.asm \
 		src/defs/tinyvicky.asm \
 		src/defs/io.asm 
-		
+BINS =  tile_data/tileset.bin \
+  	    tile_data/tileset.pal.bin		
+
 OPTS = 	--long-address -b -fc
 
-$(BLD_NAME): $(SRC)
+$(BLD_NAME): $(SRC) $(BINS)
 		64tass $(OPTS) $(SRC) -o $@ --list $(basename $@).lst --labels=$(basename $@).lbl
 
 up: 	$(BLD_NAME)

@@ -23,12 +23,12 @@ TileMapLayer2
 
 * = $012000
 TileSetData
-.binary "../tile_data/out.bin" ;tile_data/VICKY_II_Tile_Export.tiles_Modded.bin"
+.binary "../tile_data/tileset.bin"
 
 ; In the CPU Memory Zone
 * = $EF00
 TileMapPalette
-.binary "../tile_data/VICKY_II_Tile_Export.tiles_Modded.pal.bin" 
+.binary "../tile_data/tileset.pal.bin"
 
 ; Start of actual tile demo code
 
