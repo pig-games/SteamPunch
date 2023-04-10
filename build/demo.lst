@@ -1,306 +1,26 @@
 
 ; 64tass Turbo Assembler Macro V1.56.2625 listing file
-; 64tass --long-address -b -fc -o build/demo.bin --list build/demo.lst --labels=build/demo.lbl src/main.asm src/system.asm src/tiles.asm src/defs/interrupt.asm src/defs/tinyvicky.asm src/defs/io.asm
-; Mon Apr 10 00:21:02 2023
+; 64tass --long-address -b -fc -o build/demo.bin --list build/demo.lst --labels=build/demo.lbl src/main.asm src/init.asm src/system.asm src/tiles.asm src/display.asm src/audio.asm src/defs/interrupt.asm src/defs/tinyvicky.asm src/defs/io.asm
+; Mon Apr 10 17:01:21 2023
 
 ;Offset	;PC	;Hex		;Monitor	;Source
 
 ;******  Processing input file: src/main.asm
 
-.e000						boot
-.e000		18		clc				clc           		; clear the carry flag
-.e001		78		sei			        sei			; No Interrupt now baby
-.e002		a2 ff		ldx #$ff			ldx #$FF 		; Let's push that stack pointer right up there
-.e004		9a		txs				txs
-.e005		a9 80		lda #$80	                lda #$80
-.e007		85 00		sta $00		                sta $00
-.e009		a9 00		lda #$00	                lda #$00
-.e00b		85 08		sta $08		                sta $08
-.e00d		1a		inc a		                inc a
-.e00e		85 09		sta $09		                sta $09
-.e010		1a		inc a		                inc a
-.e011		85 0a		sta $0a		                sta $0A
-.e013		1a		inc a		                inc a
-.e014		85 0b		sta $0b		                sta $0B
-.e016		1a		inc a		                inc a
-.e017		85 0c		sta $0c		                sta $0C
-.e019		1a		inc a		                inc a
-.e01a		85 0d		sta $0d		                sta $0D
-.e01c		1a		inc a		                inc a
-.e01d		85 0e		sta $0e		                sta $0E
-.e01f		1a		inc a		                inc a
-.e020		85 0f		sta $0f		                sta $0F
-.e022		a9 20		lda #$20	                lda #$20
-.e024		85 0a		sta $0a		                sta $0A            ; Assign the External RAM for S
-.e026		a9 00		lda #$00	                lda #$00
-.e028		85 00		sta $00		                sta $00            ; Disable edit
-.e02a		a2 00		ldx #$00	                ldx #$00
-.e02c		a9 00		lda #$00	                lda #$00
-.e02e						fillZP:
-.e02e		95 20		sta $20,x	                sta $20,x
-.e030		e8		inx		                inx
-.e031		e0 e0		cpx #$e0	                cpx #$E0
-.e033		d0 f9		bne $e02e	                bne fillZP
-.e035		a9 ff		lda #$ff	                lda #$FF
-.e037		8d 68 d6	sta $d668	                sta interrupt.EDGE_REG0
-.e03a		8d 69 d6	sta $d669	                sta interrupt.EDGE_REG1
-.e03d		8d 6a d6	sta $d66a	                sta interrupt.EDGE_REG2
-.e040		8d 6c d6	sta $d66c	                sta interrupt.MASK_REG0
-.e043		8d 6d d6	sta $d66d	                sta interrupt.MASK_REG1
-.e046		8d 6e d6	sta $d66e	                sta interrupt.MASK_REG2
-.e049		ad 60 d6	lda $d660	                lda interrupt.PENDING_REG0
-.e04c		8d 60 d6	sta $d660	                sta interrupt.PENDING_REG0
-.e04f		ad 61 d6	lda $d661	                lda interrupt.PENDING_REG1
-.e052		8d 61 d6	sta $d661	                sta interrupt.PENDING_REG1
-.e055		ad 62 d6	lda $d662	                lda interrupt.PENDING_REG2
-.e058		8d 63 d6	sta $d663	                sta interrupt.PENDING_REG3
-.e05b		20 d5 e0	jsr $e0d5			jsr setIOPage0		; The Color LUT for the Text Mode is in Page 0
-.e05e		20 55 e1	jsr $e155	                jsr tinyVkyInit
-.e061		20 00 e2	jsr $e200	                jsr system.initCodec		; Make sure to setup the CODEC Very early
-.e064		20 99 e1	jsr $e199	                jsr mutePSG
-.e067		20 ba e0	jsr $e0ba			jsr initTextLUT	; Init the Text Color Table
-.e06a		20 ea e0	jsr $e0ea			jsr setIOPage3		;
-.e06d		20 11 e1	jsr $e111	                jsr fillColor
-.e070		20 e1 e0	jsr $e0e1	                jsr setIOPage2		;
-.e073		20 f3 e0	jsr $e0f3	                jsr clearScreen    ;
-.e076		20 2f e1	jsr $e12f	                jsr splashText
-.e079		20 d5 e0	jsr $e0d5			jsr setIOPage0
-.e07c		20 d5 e0	jsr $e0d5			jsr setIOPage0
-.e07f		a9 00		lda #$00	                lda #$00
-.e081		8d e0 d6	sta $d6e0	                sta $D6E0           ; We don't need the mouse
-.e084		a9 17		lda #$17	                lda #( vky.mctrl.GRAPH_MODE_EN  | vky.mctrl.TILEmAP_EN | vky.mctrl.TEXT_MODE_EN | vky.mctrl.TEXT_OVERLAY )
-.e086		8d 00 d0	sta $d000	                sta vky.mctrl.REG_L
-.e089		a9 00		lda #$00	                lda #$00
-.e08b		8d 01 d0	sta $d001	                sta vky.mctrl.REG_H
-.e08e		a9 00		lda #$00	                lda #$00
-.e090		8d 04 d0	sta $d004	                sta vky.border.CTRL_REG
-.e093		a9 20		lda #$20	                lda #$20
-.e095		8d 0d d0	sta $d00d	                sta vky.BACKGROUND_COLOR_B
-.e098		8d 0e d0	sta $d00e	                sta vky.BACKGROUND_COLOR_G
-.e09b		8d 0f d0	sta $d00f	                sta vky.BACKGROUND_COLOR_R
-.e09e		20 d5 e0	jsr $e0d5	                jsr setIOPage0
-.e0a1		a9 54		lda #$54	                lda #$54
-.e0a3		8d 02 d0	sta $d002	                sta vky.layer.CTRL_REG0
-.e0a6		a9 06		lda #$06	                lda #$06
-.e0a8		8d 03 d0	sta $d003	                sta vky.layer.CTRL_REG1
-.e0ab		20 00 f0	jsr $f000	                jsr tiles.start
-.e0ae		58		cli		                cli
-.e0af		ad 6c d6	lda $d66c	                lda interrupt.MASK_REG0
-.e0b2		29 fe		and #$fe	                and #~interrupt.JR0_INT00_SOF
-.e0b4		8d 6c d6	sta $d66c	                sta interrupt.MASK_REG0
-.e0b7		4c b7 e0	jmp $e0b7	DONE	        JMP DONE
-.e0ba						initTextLUT
-.e0ba		a2 00		ldx #$00			ldx #$00
-.e0bc		bd 00 e8	lda $e800,x	loop0		lda FgColorLut,x		; get Local Data
-.e0bf		9d 00 d8	sta $d800,x	                sta system.TEXT_LUT_FG,x	; Write in LUT Memory
-.e0c2		e8		inx		                inx
-.e0c3		e0 40		cpx #$40	                cpx #$40
-.e0c5		d0 f5		bne $e0bc	                bne loop0
-.e0c7		a2 00		ldx #$00	                ldx #$00
-.e0c9		bd 40 e8	lda $e840,x	loop1		lda BgColorLut,x		; get Local Data
-.e0cc		9d 40 d8	sta $d840,x	                sta system.TEXT_LUT_BG,x	; Write in LUT Memory
-.e0cf		e8		inx		                inx
-.e0d0		e0 40		cpx #$40	                cpx #$40
-.e0d2		d0 f5		bne $e0c9	                bne loop1
-.e0d4		60		rts				rts
-.e0d5						setIOPage0
-.e0d5		a5 01		lda $01				lda $01		; Load Page Control Register
-.e0d7		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
-.e0d9		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
-.e0db		60		rts				rts
-.e0dc						setIOPage1
-.e0dc		a9 01		lda #$01			lda #$01		; Load Page Control Register
-.e0de		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
-.e0e0		60		rts				rts
-.e0e1						setIOPage2
-.e0e1		a5 01		lda $01				lda $01		; Load Page Control Register
-.e0e3		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
-.e0e5		09 02		ora #$02			ora #$02
-.e0e7		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
-.e0e9		60		rts				rts
-.e0ea						setIOPage3
-.e0ea		a5 01		lda $01				lda $01		; Load Page Control Register
-.e0ec		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
-.e0ee		09 03		ora #$03			ora #$03
-.e0f0		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
-.e0f2		60		rts				rts
-.e0f3						clearScreen
-.e0f3		a2 00		ldx #$00			ldx #$00
-.e0f5		a9 00		lda #$00	                lda #$00
-.e0f7		85 20		sta $20		                sta $20
-.e0f9		a9 c0		lda #$c0	                lda #$C0
-.e0fb		85 21		sta $21		                sta $21
-.e0fd		a0 00		ldy #$00	                ldy #$00
-.e0ff						loopA
-.e0ff		a9 20		lda #$20	                lda #$20
-.e101						loopY
-.e101		91 20		sta ($20),y	                sta ($20),y
-.e103		c8		iny		                iny
-.e104		c0 00		cpy #$00	                cpy #$00
-.e106		d0 f9		bne $e101	                bne loopY
-.e108		e6 21		inc $21		                inc $21
-.e10a		a5 21		lda $21		                lda $21
-.e10c		c9 d3		cmp #$d3	                cmp #$D3
-.e10e		d0 ef		bne $e0ff	                bne loopA
-.e110		60		rts		                rts
-.e111						fillColor
-.e111		a2 00		ldx #$00			ldx #$00
-.e113		a9 00		lda #$00	                lda #$00
-.e115		85 20		sta $20		                sta $20
-.e117		a9 c0		lda #$c0	                lda #$C0
-.e119		85 21		sta $21		                sta $21
-.e11b		a0 00		ldy #$00	                ldy #$00
-.e11d						loopA
-.e11d		a9 e1		lda #$e1	                lda #$E1
-.e11f						loopY
-.e11f		91 20		sta ($20),y	                sta ($20),y
-.e121		c8		iny		                iny
-.e122		c0 00		cpy #$00	                cpy #$00
-.e124		d0 f9		bne $e11f	                bne loopY
-.e126		e6 21		inc $21		                inc $21
-.e128		a5 21		lda $21		                lda $21
-.e12a		c9 d3		cmp #$d3	                cmp #$D3
-.e12c		d0 ef		bne $e11d	                bne loopA
-.e12e		60		rts		                rts
-.e12f						splashText
-.e12f		a9 00		lda #$00			lda #$00
-.e131		85 20		sta $20		                sta $20
-.e133		a9 c0		lda #$c0	                lda #$C0
-.e135		85 21		sta $21		                sta $21
-.e137		a9 80		lda #$80	                lda #<Text2Display
-.e139		85 22		sta $22		                sta $22
-.e13b		a9 e8		lda #$e8	                lda #>Text2Display
-.e13d		85 23		sta $23		                sta $23
-.e13f						printText
-.e13f		a0 00		ldy #$00	                ldy #$00
-.e141						loopY
-.e141		b1 22		lda ($22),y	                lda ($22),y
-.e143		c9 00		cmp #$00	                cmp #$00
-.e145		f0 0d		beq $e154	                beq endSplash
-.e147		91 20		sta ($20),y	                sta ($20),y
-.e149		c8		iny		                iny
-.e14a		c0 00		cpy #$00	                cpy #$00
-.e14c		d0 f3		bne $e141	                bne loopY
-.e14e		e6 21		inc $21		                inc $21
-.e150		e6 23		inc $23		                inc $23
-.e152		d0 ed		bne $e141	                bne loopY
-.e154						endSplash
-.e154		60		rts		                rts
-.e155						tinyVkyInit
-.e155		a9 01		lda #$01	            lda #vky.mctrl.TEXT_MODE_EN;
-.e157		8d 00 d0	sta $d000	            sta vky.mctrl.REG_L
-.e15a		ad 00 d0	lda $d000	            lda vky.mctrl.REG_L
-.e15d		a9 01		lda #$01	            lda #vky.border.CTRL_ENABLE
-.e15f		8d 04 d0	sta $d004	            sta vky.border.CTRL_REG
-.e162		a9 ff		lda #$ff	            lda #$FF ;AAFFEE
-.e164		8d 05 d0	sta $d005	            sta vky.border.COLOR_B
-.e167		a9 88		lda #$88	            lda #$88 ;AAFFEE
-.e169		8d 06 d0	sta $d006	            sta vky.border.COLOR_G
-.e16c		a9 00		lda #$00	            lda #$00
-.e16e		8d 07 d0	sta $d007	            sta vky.border.COLOR_R
-.e171		a9 10		lda #$10	            lda #16
-.e173		8d 08 d0	sta $d008	            sta vky.border.X_SIZE
-.e176		8d 09 d0	sta $d009	            sta vky.border.Y_SIZE
-.e179		a9 09		lda #$09	            lda #vky.cursor.ENABLE | vky.cursor.TURNOFF_FLASH
-.e17b		8d 10 d0	sta $d010	            sta vky.cursor.TXT_CTRL_REG
-.e17e		a9 07		lda #$07	            lda #7
-.e180		8d 12 d0	sta $d012	            sta vky.cursor.TXT_CHAR_REG
-.e183		a9 1c		lda #$1c	            lda #28
-.e185		8d 13 d0	sta $d013	            sta vky.cursor.TXT_COLR_REG
-.e188		a9 00		lda #$00	            lda #0
-.e18a		8d 14 d0	sta $d014	            sta vky.cursor.TXT_X_REG_L
-.e18d		8d 15 d0	sta $d015	            sta vky.cursor.TXT_X_REG_H
-.e190		8d 17 d0	sta $d017	            sta vky.cursor.TXT_Y_REG_H
-.e193		a9 06		lda #$06	            lda #6
-.e195		8d 16 d0	sta $d016	            sta vky.cursor.TXT_Y_REG_L
-.e198		60		rts		            rts
-=$d600						PSG_INT_L_PORT = $D600          ; Control register for the SN76489
-=$d610						PSG_INT_R_PORT = $D610          ; Control register for the SN76489
-.e199		20 d5 e0	jsr $e0d5	mutePSG     jsr setIOPage0
-.e19c		a9 9f		lda #$9f	            lda #$9f            ; Mute channel #0 (1001111)
-.e19e		8d 00 d6	sta $d600	            sta PSG_INT_L_PORT
-.e1a1		8d 10 d6	sta $d610	            sta PSG_INT_R_PORT
-.e1a4		a9 bf		lda #$bf	            lda #$bf            ; Mute channel #2 (1011111)
-.e1a6		8d 00 d6	sta $d600	            sta PSG_INT_L_PORT
-.e1a9		8d 10 d6	sta $d610	            sta PSG_INT_R_PORT
-.e1ac		a9 df		lda #$df	            lda #$df            ; Mute channel #3 (1101111)
-.e1ae		8d 00 d6	sta $d600	            sta PSG_INT_L_PORT
-.e1b1		8d 10 d6	sta $d610	            sta PSG_INT_R_PORT
-.e1b4		a9 ff		lda #$ff	            lda #$ff            ; Mute channel #4 (1111111)
-.e1b6		8d 00 d6	sta $d600	            sta PSG_INT_L_PORT
-.e1b9		8d 10 d6	sta $d610	            sta PSG_INT_R_PORT
-.e1bc		60		rts		            rts
->e800						.align 16
-.e800						FgColorLut
->e800		00 00 00 ff					.text $00, $00, $00, $FF
->e804		00 00 80 ff			                .text $00, $00, $80, $FF
->e808		00 80 00 ff			                .text $00, $80, $00, $FF
->e80c		80 00 00 ff			                .text $80, $00, $00, $FF
->e810		00 80 80 ff			                .text $00, $80, $80, $FF
->e814		80 80 00 ff			                .text $80, $80, $00, $FF
->e818		80 00 80 ff			                .text $80, $00, $80, $FF
->e81c		80 80 80 ff			                .text $80, $80, $80, $FF
->e820		00 45 ff ff			                .text $00, $45, $FF, $FF
->e824		13 45 8b ff			                .text $13, $45, $8B, $FF
->e828		00 00 20 ff			                .text $00, $00, $20, $FF
->e82c		00 20 00 ff			                .text $00, $20, $00, $FF
->e830		20 00 00 ff			                .text $20, $00, $00, $FF
->e834		20 20 20 ff			                .text $20, $20, $20, $FF
->e838		ff 80 00 ff			                .text $FF, $80, $00, $FF
->e83c		ff ff ff ff			                .text $FF, $FF, $FF, $FF
-.e840						BgColorLut
->e840		00 00 00 ff					.text $00, $00, $00, $FF  ;BGRA
->e844		aa 00 00 ff			                .text $AA, $00, $00, $FF
->e848		00 80 00 ff			                .text $00, $80, $00, $FF
->e84c		00 00 80 ff			                .text $00, $00, $80, $FF
->e850		00 20 20 ff			                .text $00, $20, $20, $FF
->e854		20 20 00 ff			                .text $20, $20, $00, $FF
->e858		20 00 20 ff			                .text $20, $00, $20, $FF
->e85c		20 20 20 ff			                .text $20, $20, $20, $FF
->e860		1e 69 d2 ff			                .text $1E, $69, $D2, $FF
->e864		13 45 8b ff			                .text $13, $45, $8B, $FF
->e868		00 00 20 ff			                .text $00, $00, $20, $FF
->e86c		00 20 00 ff			                .text $00, $20, $00, $FF
->e870		40 00 00 ff			                .text $40, $00, $00, $FF
->e874		10 10 10 ff			                .text $10, $10, $10, $FF
->e878		40 40 40 ff			                .text $40, $40, $40, $FF
->e87c		ff ff ff ff			                .text $FF, $FF, $FF, $FF
->e880						.align 16
->e880		20 20 20 20 20 20 20 20		Text2Display    .text "                                                                                "
->e888		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
-;		...repeated 3 times (48 bytes)...
->e8c8		20 20 20 20 20 20 20 20
->e8d0		20 20 20 20 20 20 20 20		                .text "                ****           F256 Jr DEMO            ****                     "
->e8d8		20 20 20 20 20 20 20 20 2a 2a 2a 2a 20 20 20 20
->e8e8		20 20 20 20 20 20 20 46 32 35 36 20 4a 72 20 44
->e8f8		45 4d 4f 20 20 20 20 20 20 20 20 20 20 20 20 2a
->e908		2a 2a 2a 20 20 20 20 20 20 20 20 20 20 20 20 20
->e918		20 20 20 20 20 20 20 20
->e920		20 20 20 20 20 20 20 20		                .text "                                                                                "
->e928		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
-;		...repeated 3 times (48 bytes)...
->e968		20 20 20 20 20 20 20 20
->e970		20 20 20 20 20 20 20 20		                .text "                            512K RAM 512K Flash                                 "
->e978		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
->e988		20 20 20 20 35 31 32 4b 20 52 41 4d 20 35 31 32
->e998		4b 20 46 6c 61 73 68 20 20 20 20 20 20 20 20 20
->e9a8		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
->e9b8		20 20 20 20 20 20 20 20
->e9c0		00				                .text $00
->e9c1		54 48 45 20 50 53 32 20		FailedKbd       .text "THE PS2 INIT FAILED", $00
->e9c9		49 4e 49 54 20 46 41 49 4c 45 44 00
->e9d5		54 48 45 20 50 53 32 20		SuccessKbd      .text "THE PS2 INIT SUCCEEDED", $00
->e9dd		49 4e 49 54 20 53 55 43 43 45 45 44 45 44 00
->e9ec		54 48 45 20 53 44 43 41		FailedSDC       .text "THE SDCARD FAILED", $00
->e9f4		52 44 20 46 41 49 4c 45 44 00
->e9fe		54 48 45 20 53 44 43 41		SuccessSDC      .text "THE SDCARD INIT... SUCCESS", $00
->ea06		52 44 20 49 4e 49 54 2e 2e 2e 20 53 55 43 43 45
->ea16		53 53 00
->ea19		4e 3a 43 32 35 36 4a 52		Format          .text "N:C256JR,S", $00, "A"
->ea21		2c 53 00 41
->ea25		30 31 32 33 34 35 36 37		HEX             .text "0123456789", $01, $02, $03, $04, $05, $00
->ea2d		38 39 01 02 03 04 05 00
+.0002						DP
+.0100						Stack
+>0100								.fill $100
+.e000						Boot
+.e800						DATA
+.ef00						TileMapPalette
+.f000						Demo
 .fe00						IRQ
+.ff00						NMI
+.fffa						IVEC
+.010000	0000					TileMapLayer0
+.010a00	0a00					TileMapLayer1
+.011400	1400					TileMapLayer2
+.012000	2000					TileSetData
 .fe00		48		pha		                pha
 .fe01		da		phx		                phx
 .fe02		5a		phy		                phy
@@ -312,11 +32,47 @@
 .fe0a		68		pla		                pla
 .fe0b						EXIT_IRQ_HANDLE
 .fe0b		40		rti				rti
-.ff00						NMI
-.ff00		40		rti						RTI
 >fffa		00 ff				RVECTOR_NMI     .addr NMI    ; FFFA
->fffc		00 e0				RVECTOR_RST 	.addr boot   ; FFFC
+>fffc		00 e0				RVECTOR_RST 	.addr Boot   ; FFFC
 >fffe		00 fe				RVECTOR_IRQ     .addr IRQ    ; FFFE
+
+;******  Processing input file: src/init.asm
+
+.e050		20 af e0	jsr $e0af			jsr system.setIOPage0		; The Color LUT for the Text Mode is in Page 0
+.e053		20 cd e0	jsr $e0cd	                jsr display.tinyVkyInit
+.e056		20 8e e1	jsr $e18e	                jsr audio.initCodec		; Make sure to setup the CODEC Very early
+.e059		20 17 e2	jsr $e217	                jsr audio.mutePSG
+.e05c		20 11 e1	jsr $e111			jsr display.initTextLUT	; Init the Text Color Table
+.e05f		20 c4 e0	jsr $e0c4			jsr system.setIOPage3		;
+.e062		20 4a e1	jsr $e14a	                jsr display.fillColor
+.e065		20 bb e0	jsr $e0bb	                jsr system.setIOPage2		;
+.e068		20 2c e1	jsr $e12c	                jsr display.clearScreen    ;
+.e06b		20 68 e1	jsr $e168	                jsr display.splashText
+.e06e		20 af e0	jsr $e0af			jsr system.setIOPage0
+.e071		20 af e0	jsr $e0af			jsr system.setIOPage0
+.e074		a9 00		lda #$00	                lda #$00
+.e076		8d e0 d6	sta $d6e0	                sta $D6E0           ; We don't need the mouse
+.e079		a9 17		lda #$17	                lda #( vky.mctrl.GRAPH_MODE_EN  | vky.mctrl.TILEmAP_EN | vky.mctrl.TEXT_MODE_EN | vky.mctrl.TEXT_OVERLAY )
+.e07b		8d 00 d0	sta $d000	                sta vky.mctrl.REG_L
+.e07e		a9 00		lda #$00	                lda #$00
+.e080		8d 01 d0	sta $d001	                sta vky.mctrl.REG_H
+.e083		a9 00		lda #$00	                lda #$00
+.e085		8d 04 d0	sta $d004	                sta vky.border.CTRL_REG
+.e088		a9 20		lda #$20	                lda #$20
+.e08a		8d 0d d0	sta $d00d	                sta vky.BACKGROUND_COLOR_B
+.e08d		8d 0e d0	sta $d00e	                sta vky.BACKGROUND_COLOR_G
+.e090		8d 0f d0	sta $d00f	                sta vky.BACKGROUND_COLOR_R
+.e093		20 af e0	jsr $e0af	                jsr system.setIOPage0
+.e096		a9 54		lda #$54	                lda #$54
+.e098		8d 02 d0	sta $d002	                sta vky.layer.CTRL_REG0
+.e09b		a9 06		lda #$06	                lda #$06
+.e09d		8d 03 d0	sta $d003	                sta vky.layer.CTRL_REG1
+.e0a0		20 00 f0	jsr $f000	                jsr tiles.start
+.e0a3		58		cli		                cli
+.e0a4		ad 6c d6	lda $d66c	                lda interrupt.MASK_REG0
+.e0a7		29 fe		and #$fe	                and #~interrupt.JR0_INT00_SOF
+.e0a9		8d 6c d6	sta $d66c	                sta interrupt.MASK_REG0
+.e0ac		4c ac e0	jmp $e0ac	DONE	        JMP DONE
 
 ;******  Processing input file: src/system.asm
 
@@ -355,75 +111,73 @@
 =$c000						TEXT_MEM         = $C000 	; IO Page 2
 =$c000						COLOR_MEM        = $C000 	; IO Page 3
 =$d670						DIPSWITCH        = $D670
-=$d620						CODEC_LOW        = $D620
-=$d621						CODEC_HI         = $D621
-=$d622						CODEC_CTRL       = $D622
 =$dd00						SPI_CTRL_REG     = $DD00
 =$dd01						SPI_DATA_REG     = $DD01    ;  SPI Tx and Rx - Wait for BUSY to == 0 before reading back or to send something new
-.e200						initCodec
-.e200		a9 00		lda #$00	            lda #%00000000
-.e202		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e205		a9 1a		lda #$1a	            lda #%00011010
-.e207		8d 21 d6	sta $d621	            sta CODEC_HI
-.e20a		a9 01		lda #$01	            lda #$01
-.e20c		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e20f		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e212		a9 03		lda #$03	            lda #%00000011
-.e214		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e217		a9 2a		lda #$2a	            lda #%00101010
-.e219		8d 21 d6	sta $d621	            sta CODEC_HI
-.e21c		a9 01		lda #$01	            lda #$01
-.e21e		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e221		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e224		a9 01		lda #$01	            lda #%00000001
-.e226		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e229		a9 23		lda #$23	            lda #%00100011
-.e22b		8d 21 d6	sta $d621	            sta CODEC_HI
-.e22e		a9 01		lda #$01	            lda #$01
-.e230		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e233		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e236		a9 07		lda #$07	            lda #%00000111
-.e238		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e23b		a9 2c		lda #$2c	            lda #%00101100
-.e23d		8d 21 d6	sta $d621	            sta CODEC_HI
-.e240		a9 01		lda #$01	            lda #$01
-.e242		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e245		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e248		a9 02		lda #$02	            lda #%00000010
-.e24a		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e24d		a9 14		lda #$14	            lda #%00010100
-.e24f		8d 21 d6	sta $d621	            sta CODEC_HI
-.e252		a9 01		lda #$01	            lda #$01
-.e254		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e257		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e25a		a9 02		lda #$02	            lda #%00000010
-.e25c		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e25f		a9 16		lda #$16	            lda #%00010110
-.e261		8d 21 d6	sta $d621	            sta CODEC_HI
-.e264		a9 01		lda #$01	            lda #$01
-.e266		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e269		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e26c		a9 45		lda #$45	            lda #%01000101
-.e26e		8d 20 d6	sta $d620	            sta CODEC_LOW
-.e271		a9 18		lda #$18	            lda #%00011000
-.e273		8d 21 d6	sta $d621	            sta CODEC_HI
-.e276		a9 01		lda #$01	            lda #$01
-.e278		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
-.e27b		20 7f e2	jsr $e27f	            jsr CODEC_WAIT_FINISH
-.e27e		60		rts		            rts
-.e27f						CODEC_WAIT_FINISH
-.e27f						CODEC_Not_Finished:
-.e27f		ad 22 d6	lda $d622	            lda CODEC_CTRL
-.e282		29 01		and #$01	            and #$01
-.e284		c9 01		cmp #$01	            cmp #$01
-.e286		f0 f7		beq $e27f	            beq CODEC_Not_Finished
-.e288		60		rts		            rts
+.e000		18		clc				clc           		; clear the carry flag
+.e001		78		sei			        sei			; No Interrupt now baby
+.e002		a2 ff		ldx #$ff			ldx #$FF 		; Let's push that stack pointer right up there
+.e004		9a		txs				txs
+.e005		a9 80		lda #$80	                lda #$80
+.e007		85 00		sta $00		                sta $00
+.e009		a9 00		lda #$00	                lda #$00
+.e00b		85 08		sta $08		                sta $08
+.e00d		1a		inc a		                inc a
+.e00e		85 09		sta $09		                sta $09
+.e010		1a		inc a		                inc a
+.e011		85 0a		sta $0a		                sta $0A
+.e013		1a		inc a		                inc a
+.e014		85 0b		sta $0b		                sta $0B
+.e016		1a		inc a		                inc a
+.e017		85 0c		sta $0c		                sta $0C
+.e019		1a		inc a		                inc a
+.e01a		85 0d		sta $0d		                sta $0D
+.e01c		1a		inc a		                inc a
+.e01d		85 0e		sta $0e		                sta $0E
+.e01f		1a		inc a		                inc a
+.e020		85 0f		sta $0f		                sta $0F
+.e022		a9 20		lda #$20	                lda #$20
+.e024		85 0a		sta $0a		                sta $0A            ; Assign the External RAM for S
+.e026		a9 00		lda #$00	                lda #$00
+.e028		85 00		sta $00		                sta $00            ; Disable edit
+.e02a		a9 ff		lda #$ff	                lda #$FF
+.e02c		8d 68 d6	sta $d668	                sta interrupt.EDGE_REG0
+.e02f		8d 69 d6	sta $d669	                sta interrupt.EDGE_REG1
+.e032		8d 6a d6	sta $d66a	                sta interrupt.EDGE_REG2
+.e035		8d 6c d6	sta $d66c	                sta interrupt.MASK_REG0
+.e038		8d 6d d6	sta $d66d	                sta interrupt.MASK_REG1
+.e03b		8d 6e d6	sta $d66e	                sta interrupt.MASK_REG2
+.e03e		ad 60 d6	lda $d660	                lda interrupt.PENDING_REG0
+.e041		8d 60 d6	sta $d660	                sta interrupt.PENDING_REG0
+.e044		ad 61 d6	lda $d661	                lda interrupt.PENDING_REG1
+.e047		8d 61 d6	sta $d661	                sta interrupt.PENDING_REG1
+.e04a		ad 62 d6	lda $d662	                lda interrupt.PENDING_REG2
+.e04d		8d 63 d6	sta $d663	                sta interrupt.PENDING_REG3
+.e0af						setIOPage0
+.e0af		a5 01		lda $01				lda $01		; Load Page Control Register
+.e0b1		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
+.e0b3		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
+.e0b5		60		rts				rts
+.e0b6						setIOPage1
+.e0b6		a9 01		lda #$01			lda #$01		; Load Page Control Register
+.e0b8		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
+.e0ba		60		rts				rts
+.e0bb						setIOPage2
+.e0bb		a5 01		lda $01				lda $01		; Load Page Control Register
+.e0bd		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
+.e0bf		09 02		ora #$02			ora #$02
+.e0c1		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
+.e0c3		60		rts				rts
+.e0c4						setIOPage3
+.e0c4		a5 01		lda $01				lda $01		; Load Page Control Register
+.e0c6		29 fc		and #$fc			and #$FC    ; isolate 2 first bit
+.e0c8		09 03		ora #$03			ora #$03
+.e0ca		85 01		sta $01				sta $01     ; Write back to make sure we are on page 0
+.e0cc		60		rts				rts
 
 ;******  Processing input file: src/tiles.asm
 
 =54						TileMapXSize = 54
 =22						TileMapYSize = 22
-.010000	0000					TileMapLayer0
 
 ;******  Processing file: src/../tile_data/TopLayer.txm
 
@@ -590,7 +344,6 @@
 
 ;******  Return to file: src/tiles.asm
 
-.010a00	0a00					TileMapLayer1
 
 ;******  Processing file: src/../tile_data/Paralax1.txm
 
@@ -730,7 +483,6 @@
 
 ;******  Return to file: src/tiles.asm
 
-.011400	1400					TileMapLayer2
 
 ;******  Processing file: src/../tile_data/Paralax2.txm
 
@@ -847,7 +599,6 @@
 
 ;******  Return to file: src/tiles.asm
 
-.012000	2000					TileSetData
 >012000	2000	00 00 00 00 00 00 00 00		.binary "../tile_data/tileset.bin"
 >012008	2008	00 00 00 00 00 00 00 00 01 02 01 03 04 05 01 02
 >012018	2018	02 02 02 02 06 04 02 02 01 02 01 03 04 05 01 02
@@ -9612,7 +9363,6 @@
 >038fa8	8fa8	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ;		...repeated 4 times (64 bytes)...
 >038ff8	8ff8	00 00 00 00 00 00 00 00
-.ef00						TileMapPalette
 >ef00		00 00 00 ff 3d 20 49 ff		.binary "../tile_data/tileset.pal.bin"
 >ef08		21 17 23 ff 41 36 bf ff 27 56 d6 ff 48 2e 7c ff
 >ef18		49 a2 ea ff 7e aa e4 ff 6f 9c 3b ff 72 75 2e ff
@@ -9627,10 +9377,10 @@
 >efa8		58 58 d5 ff 89 44 c0 ff 5a 82 f8 ff 5f 9e f0 ff
 >efb8		62 b5 f4 ff 4a 71 e5 ff 29 15 28 ff
 .f000						start
-.f000		20 d5 e0	jsr $e0d5	                jsr setIOPage0
+.f000		20 af e0	jsr $e0af	                jsr system.setIOPage0
 .f003		9c 02 dc	stz $dc02	                stz io.joy.VIA0_DRB    ; Make Sure the VIA is in Read Mode for the Joystick
 .f006		9c 03 dc	stz $dc03	                stz io.joy.VIA0_DRA    ; Make Sure the VIA is in Read Mode for the Joystick
-.f009		20 dc e0	jsr $e0dc	                jsr setIOPage1
+.f009		20 b6 e0	jsr $e0b6	                jsr system.setIOPage1
 .f00c		a2 00		ldx #$00	                ldx #$00
 .f00e						setLUT0_4_Tiles
 .f00e		bd 00 ef	lda $ef00,x	                lda TileMapPalette,x
@@ -9638,7 +9388,7 @@
 .f014		e8		inx		                inx
 .f015		e0 c4		cpx #$c4	                cpx #196
 .f017		d0 f5		bne $f00e	                bne setLUT0_4_Tiles
-.f019		20 d5 e0	jsr $e0d5	                jsr SetIOPage0
+.f019		20 af e0	jsr $e0af	                jsr system.SetIOPage0
 .f01c		9c 01 d2	stz $d201	                stz vky.tile.T0_START_ADDY_L
 .f01f		9c 02 d2	stz $d202	                stz vky.tile.T0_START_ADDY_M
 .f022		a9 01		lda #$01	                lda #$01
@@ -9793,6 +9543,263 @@
 .f174		a9 00		lda #$00	                lda #$00
 .f176		85 50		sta $50		                sta io.joy.CNT_0
 .f178		60		rts		                rts
+
+;******  Processing input file: src/display.asm
+
+.e0cd						tinyVkyInit
+.e0cd		a9 01		lda #$01	            	lda #vky.mctrl.TEXT_MODE_EN;
+.e0cf		8d 00 d0	sta $d000	            	sta vky.mctrl.REG_L
+.e0d2		ad 00 d0	lda $d000	            	lda vky.mctrl.REG_L
+.e0d5		a9 01		lda #$01	            	lda #vky.border.CTRL_ENABLE
+.e0d7		8d 04 d0	sta $d004	            	sta vky.border.CTRL_REG
+.e0da		a9 ff		lda #$ff	            	lda #$FF ;AAFFEE
+.e0dc		8d 05 d0	sta $d005	            	sta vky.border.COLOR_B
+.e0df		a9 88		lda #$88	            	lda #$88 ;AAFFEE
+.e0e1		8d 06 d0	sta $d006	            	sta vky.border.COLOR_G
+.e0e4		a9 00		lda #$00	            	lda #$00
+.e0e6		8d 07 d0	sta $d007	            	sta vky.border.COLOR_R
+.e0e9		a9 10		lda #$10	            	lda #16
+.e0eb		8d 08 d0	sta $d008	            	sta vky.border.X_SIZE
+.e0ee		8d 09 d0	sta $d009	            	sta vky.border.Y_SIZE
+.e0f1		a9 09		lda #$09	            	lda #vky.cursor.ENABLE | vky.cursor.TURNOFF_FLASH
+.e0f3		8d 10 d0	sta $d010	            	sta vky.cursor.TXT_CTRL_REG
+.e0f6		a9 07		lda #$07	            	lda #7
+.e0f8		8d 12 d0	sta $d012	            	sta vky.cursor.TXT_CHAR_REG
+.e0fb		a9 1c		lda #$1c	            	lda #28
+.e0fd		8d 13 d0	sta $d013	            	sta vky.cursor.TXT_COLR_REG
+.e100		a9 00		lda #$00	            	lda #0
+.e102		8d 14 d0	sta $d014	            	sta vky.cursor.TXT_X_REG_L
+.e105		8d 15 d0	sta $d015	            	sta vky.cursor.TXT_X_REG_H
+.e108		8d 17 d0	sta $d017	            	sta vky.cursor.TXT_Y_REG_H
+.e10b		a9 06		lda #$06	            	lda #6
+.e10d		8d 16 d0	sta $d016	            	sta vky.cursor.TXT_Y_REG_L
+.e110		60		rts		            	rts
+.e111						initTextLUT
+.e111		a2 00		ldx #$00			ldx #$00
+.e113		bd 00 e8	lda $e800,x	loop0		lda FgColorLut,x		; get Local Data
+.e116		9d 00 d8	sta $d800,x	                sta system.TEXT_LUT_FG,x	; Write in LUT Memory
+.e119		e8		inx		                inx
+.e11a		e0 40		cpx #$40	                cpx #$40
+.e11c		d0 f5		bne $e113	                bne loop0
+.e11e		a2 00		ldx #$00	                ldx #$00
+.e120		bd 40 e8	lda $e840,x	loop1		lda BgColorLut,x		; get Local Data
+.e123		9d 40 d8	sta $d840,x	                sta system.TEXT_LUT_BG,x	; Write in LUT Memory
+.e126		e8		inx		                inx
+.e127		e0 40		cpx #$40	                cpx #$40
+.e129		d0 f5		bne $e120	                bne loop1
+.e12b		60		rts				rts
+.e12c						clearScreen
+.e12c		a2 00		ldx #$00			ldx #$00
+.e12e		a9 00		lda #$00	                lda #$00
+.e130		85 20		sta $20		                sta $20
+.e132		a9 c0		lda #$c0	                lda #$C0
+.e134		85 21		sta $21		                sta $21
+.e136		a0 00		ldy #$00	                ldy #$00
+.e138						loopA
+.e138		a9 20		lda #$20	                lda #$20
+.e13a						loopY
+.e13a		91 20		sta ($20),y	                sta ($20),y
+.e13c		c8		iny		                iny
+.e13d		c0 00		cpy #$00	                cpy #$00
+.e13f		d0 f9		bne $e13a	                bne loopY
+.e141		e6 21		inc $21		                inc $21
+.e143		a5 21		lda $21		                lda $21
+.e145		c9 d3		cmp #$d3	                cmp #$D3
+.e147		d0 ef		bne $e138	                bne loopA
+.e149		60		rts		                rts
+.e14a						fillColor
+.e14a		a2 00		ldx #$00			ldx #$00
+.e14c		a9 00		lda #$00	                lda #$00
+.e14e		85 20		sta $20		                sta $20
+.e150		a9 c0		lda #$c0	                lda #$C0
+.e152		85 21		sta $21		                sta $21
+.e154		a0 00		ldy #$00	                ldy #$00
+.e156						loopA
+.e156		a9 e1		lda #$e1	                lda #$E1
+.e158						loopY
+.e158		91 20		sta ($20),y	                sta ($20),y
+.e15a		c8		iny		                iny
+.e15b		c0 00		cpy #$00	                cpy #$00
+.e15d		d0 f9		bne $e158	                bne loopY
+.e15f		e6 21		inc $21		                inc $21
+.e161		a5 21		lda $21		                lda $21
+.e163		c9 d3		cmp #$d3	                cmp #$D3
+.e165		d0 ef		bne $e156	                bne loopA
+.e167		60		rts		                rts
+.e168						splashText
+.e168		a9 00		lda #$00			lda #$00
+.e16a		85 20		sta $20		                sta $20
+.e16c		a9 c0		lda #$c0	                lda #$C0
+.e16e		85 21		sta $21		                sta $21
+.e170		a9 80		lda #$80	                lda #<Text2Display
+.e172		85 22		sta $22		                sta $22
+.e174		a9 e8		lda #$e8	                lda #>Text2Display
+.e176		85 23		sta $23		                sta $23
+.e178						printText
+.e178		a0 00		ldy #$00	                ldy #$00
+.e17a						loopY
+.e17a		b1 22		lda ($22),y	                lda ($22),y
+.e17c		c9 00		cmp #$00	                cmp #$00
+.e17e		f0 0d		beq $e18d	                beq endSplash
+.e180		91 20		sta ($20),y	                sta ($20),y
+.e182		c8		iny		                iny
+.e183		c0 00		cpy #$00	                cpy #$00
+.e185		d0 f3		bne $e17a	                bne loopY
+.e187		e6 21		inc $21		                inc $21
+.e189		e6 23		inc $23		                inc $23
+.e18b		d0 ed		bne $e17a	                bne loopY
+.e18d						endSplash
+.e18d		60		rts		                rts
+>e800						.align 16
+.e800						FgColorLut
+>e800		00 00 00 ff					.text $00, $00, $00, $FF
+>e804		00 00 80 ff			                .text $00, $00, $80, $FF
+>e808		00 80 00 ff			                .text $00, $80, $00, $FF
+>e80c		80 00 00 ff			                .text $80, $00, $00, $FF
+>e810		00 80 80 ff			                .text $00, $80, $80, $FF
+>e814		80 80 00 ff			                .text $80, $80, $00, $FF
+>e818		80 00 80 ff			                .text $80, $00, $80, $FF
+>e81c		80 80 80 ff			                .text $80, $80, $80, $FF
+>e820		00 45 ff ff			                .text $00, $45, $FF, $FF
+>e824		13 45 8b ff			                .text $13, $45, $8B, $FF
+>e828		00 00 20 ff			                .text $00, $00, $20, $FF
+>e82c		00 20 00 ff			                .text $00, $20, $00, $FF
+>e830		20 00 00 ff			                .text $20, $00, $00, $FF
+>e834		20 20 20 ff			                .text $20, $20, $20, $FF
+>e838		ff 80 00 ff			                .text $FF, $80, $00, $FF
+>e83c		ff ff ff ff			                .text $FF, $FF, $FF, $FF
+.e840						BgColorLut
+>e840		00 00 00 ff					.text $00, $00, $00, $FF  ;BGRA
+>e844		aa 00 00 ff			                .text $AA, $00, $00, $FF
+>e848		00 80 00 ff			                .text $00, $80, $00, $FF
+>e84c		00 00 80 ff			                .text $00, $00, $80, $FF
+>e850		00 20 20 ff			                .text $00, $20, $20, $FF
+>e854		20 20 00 ff			                .text $20, $20, $00, $FF
+>e858		20 00 20 ff			                .text $20, $00, $20, $FF
+>e85c		20 20 20 ff			                .text $20, $20, $20, $FF
+>e860		1e 69 d2 ff			                .text $1E, $69, $D2, $FF
+>e864		13 45 8b ff			                .text $13, $45, $8B, $FF
+>e868		00 00 20 ff			                .text $00, $00, $20, $FF
+>e86c		00 20 00 ff			                .text $00, $20, $00, $FF
+>e870		40 00 00 ff			                .text $40, $00, $00, $FF
+>e874		10 10 10 ff			                .text $10, $10, $10, $FF
+>e878		40 40 40 ff			                .text $40, $40, $40, $FF
+>e87c		ff ff ff ff			                .text $FF, $FF, $FF, $FF
+>e880						.align 16
+>e880		20 20 20 20 20 20 20 20		Text2Display    .text "                                                                                "
+>e888		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+;		...repeated 3 times (48 bytes)...
+>e8c8		20 20 20 20 20 20 20 20
+>e8d0		20 20 20 20 20 20 20 20		                .text "                ****           F256 Jr DEMO            ****                     "
+>e8d8		20 20 20 20 20 20 20 20 2a 2a 2a 2a 20 20 20 20
+>e8e8		20 20 20 20 20 20 20 46 32 35 36 20 4a 72 20 44
+>e8f8		45 4d 4f 20 20 20 20 20 20 20 20 20 20 20 20 2a
+>e908		2a 2a 2a 20 20 20 20 20 20 20 20 20 20 20 20 20
+>e918		20 20 20 20 20 20 20 20
+>e920		20 20 20 20 20 20 20 20		                .text "                                                                                "
+>e928		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+;		...repeated 3 times (48 bytes)...
+>e968		20 20 20 20 20 20 20 20
+>e970		20 20 20 20 20 20 20 20		                .text "                            512K RAM 512K Flash                                 "
+>e978		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+>e988		20 20 20 20 35 31 32 4b 20 52 41 4d 20 35 31 32
+>e998		4b 20 46 6c 61 73 68 20 20 20 20 20 20 20 20 20
+>e9a8		20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20
+>e9b8		20 20 20 20 20 20 20 20
+>e9c0		00				                .text $00
+>e9c1		54 48 45 20 50 53 32 20		FailedKbd       .text "THE PS2 INIT FAILED", $00
+>e9c9		49 4e 49 54 20 46 41 49 4c 45 44 00
+>e9d5		54 48 45 20 50 53 32 20		SuccessKbd      .text "THE PS2 INIT SUCCEEDED", $00
+>e9dd		49 4e 49 54 20 53 55 43 43 45 45 44 45 44 00
+>e9ec		54 48 45 20 53 44 43 41		FailedSDC       .text "THE SDCARD FAILED", $00
+>e9f4		52 44 20 46 41 49 4c 45 44 00
+>e9fe		54 48 45 20 53 44 43 41		SuccessSDC      .text "THE SDCARD INIT... SUCCESS", $00
+>ea06		52 44 20 49 4e 49 54 2e 2e 2e 20 53 55 43 43 45
+>ea16		53 53 00
+>ea19		4e 3a 43 32 35 36 4a 52		Format          .text "N:C256JR,S", $00, "A"
+>ea21		2c 53 00 41
+>ea25		30 31 32 33 34 35 36 37		HEX             .text "0123456789", $01, $02, $03, $04, $05, $00
+>ea2d		38 39 01 02 03 04 05 00
+
+;******  Processing input file: src/audio.asm
+
+=$d600						PSG_INT_L_PORT = $D600          ; Control register for the SN76489
+=$d610						PSG_INT_R_PORT = $D610          ; Control register for the SN76489
+=$d620						CODEC_LOW        = $D620
+=$d621						CODEC_HI         = $D621
+=$d622						CODEC_CTRL       = $D622
+.e18e						initCodec
+.e18e		a9 00		lda #$00	            lda #%00000000
+.e190		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e193		a9 1a		lda #$1a	            lda #%00011010
+.e195		8d 21 d6	sta $d621	            sta CODEC_HI
+.e198		a9 01		lda #$01	            lda #$01
+.e19a		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e19d		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1a0		a9 03		lda #$03	            lda #%00000011
+.e1a2		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1a5		a9 2a		lda #$2a	            lda #%00101010
+.e1a7		8d 21 d6	sta $d621	            sta CODEC_HI
+.e1aa		a9 01		lda #$01	            lda #$01
+.e1ac		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e1af		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1b2		a9 01		lda #$01	            lda #%00000001
+.e1b4		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1b7		a9 23		lda #$23	            lda #%00100011
+.e1b9		8d 21 d6	sta $d621	            sta CODEC_HI
+.e1bc		a9 01		lda #$01	            lda #$01
+.e1be		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e1c1		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1c4		a9 07		lda #$07	            lda #%00000111
+.e1c6		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1c9		a9 2c		lda #$2c	            lda #%00101100
+.e1cb		8d 21 d6	sta $d621	            sta CODEC_HI
+.e1ce		a9 01		lda #$01	            lda #$01
+.e1d0		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e1d3		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1d6		a9 02		lda #$02	            lda #%00000010
+.e1d8		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1db		a9 14		lda #$14	            lda #%00010100
+.e1dd		8d 21 d6	sta $d621	            sta CODEC_HI
+.e1e0		a9 01		lda #$01	            lda #$01
+.e1e2		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e1e5		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1e8		a9 02		lda #$02	            lda #%00000010
+.e1ea		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1ed		a9 16		lda #$16	            lda #%00010110
+.e1ef		8d 21 d6	sta $d621	            sta CODEC_HI
+.e1f2		a9 01		lda #$01	            lda #$01
+.e1f4		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e1f7		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e1fa		a9 45		lda #$45	            lda #%01000101
+.e1fc		8d 20 d6	sta $d620	            sta CODEC_LOW
+.e1ff		a9 18		lda #$18	            lda #%00011000
+.e201		8d 21 d6	sta $d621	            sta CODEC_HI
+.e204		a9 01		lda #$01	            lda #$01
+.e206		8d 22 d6	sta $d622	            sta CODEC_CTRL ;
+.e209		20 0d e2	jsr $e20d	            jsr CODEC_WAIT_FINISH
+.e20c		60		rts		            rts
+.e20d						CODEC_WAIT_FINISH
+.e20d						CODEC_Not_Finished:
+.e20d		ad 22 d6	lda $d622	            lda CODEC_CTRL
+.e210		29 01		and #$01	            and #$01
+.e212		c9 01		cmp #$01	            cmp #$01
+.e214		f0 f7		beq $e20d	            beq CODEC_Not_Finished
+.e216		60		rts		            rts
+.e217		20 af e0	jsr $e0af	mutePSG     	jsr system.setIOPage0
+.e21a		a9 9f		lda #$9f	            	lda #$9f            ; Mute channel #0 (1001111)
+.e21c		8d 00 d6	sta $d600	            	sta PSG_INT_L_PORT
+.e21f		8d 10 d6	sta $d610	            	sta PSG_INT_R_PORT
+.e222		a9 bf		lda #$bf	            	lda #$bf            ; Mute channel #2 (1011111)
+.e224		8d 00 d6	sta $d600	            	sta PSG_INT_L_PORT
+.e227		8d 10 d6	sta $d610	            	sta PSG_INT_R_PORT
+.e22a		a9 df		lda #$df	            	lda #$df            ; Mute channel #3 (1101111)
+.e22c		8d 00 d6	sta $d600	            	sta PSG_INT_L_PORT
+.e22f		8d 10 d6	sta $d610	            	sta PSG_INT_R_PORT
+.e232		a9 ff		lda #$ff	            	lda #$ff            ; Mute channel #4 (1111111)
+.e234		8d 00 d6	sta $d600	            	sta PSG_INT_L_PORT
+.e237		8d 10 d6	sta $d610	            	sta PSG_INT_R_PORT
+.e23a		60		rts		            	rts
 
 ;******  Processing input file: src/defs/interrupt.asm
 

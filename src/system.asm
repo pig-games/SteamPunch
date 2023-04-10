@@ -1,6 +1,7 @@
 .cpu "65c02"
 
-system	.namespace
+system          .namespace
+
 VECTORS_BEGIN   = $FFFA ;0 Byte  Interrupt vectors
 VECTOR_NMI      = $FFFA ;2 Bytes Emulation mode interrupt handler
 VECTOR_RESET    = $FFFC ;2 Bytes Emulation mode interrupt handler
@@ -48,10 +49,6 @@ TEXT_LUT_BG		 = $D840
 TEXT_MEM         = $C000 	; IO Page 2
 COLOR_MEM        = $C000 	; IO Page 3
 DIPSWITCH        = $D670
-; CODEC 
-CODEC_LOW        = $D620
-CODEC_HI         = $D621
-CODEC_CTRL       = $D622
 
 SPI_CTRL_REG     = $DD00  
 SPI_DATA_REG     = $DD01    ;  SPI Tx and Rx - Wait for BUSY to == 0 before reading back or to send something new
@@ -65,75 +62,82 @@ SPI_DATA_REG     = $DD01    ;  SPI Tx and Rx - Wait for BUSY to == 0 before read
 ; RAM Block 6 - Not Visible because of IO - M
 ; FLASH Block 0 - E000-FFFF - MMU Address $0F
 
-* = $e200 ; FIXME: figure out how to properly have the memory layout fixed in 64tass.
-;/////////////////////////
-;// CODEC
-;/////////////////////////
-initCodec
-            ;                LDA #%00011010_00000000     ;R13 - Turn On Headphones
-            lda #%00000000
-            sta CODEC_LOW
-            lda #%00011010
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ; LDA #%0010101000000011       ;R21 - Enable All the Analog In
-            lda #%00000011
-            sta CODEC_LOW
-            lda #%00101010
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ; LDA #%0010001100000001      ;R17 - Enable All the Analog In
-            lda #%00000001
-            sta CODEC_LOW
-            lda #%00100011
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ;   LDA #%0010110000000111      ;R22 - Enable all Analog Out
-            lda #%00000111
-            sta CODEC_LOW
-            lda #%00101100
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ; LDA #%0001010000000010      ;R10 - DAC Interface Control
-            lda #%00000010
-            sta CODEC_LOW
-            lda #%00010100
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ; LDA #%0001011000000010      ;R11 - ADC Interface Control
-            lda #%00000010
-            sta CODEC_LOW
-            lda #%00010110
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            ; LDA #%0001100111010101      ;R12 - Master Mode Control
-            lda #%01000101
-            sta CODEC_LOW
-            lda #%00011000
-            sta CODEC_HI
-            lda #$01
-            sta CODEC_CTRL ; 
-            jsr CODEC_WAIT_FINISH
-            rts
+.section boot
+                ; boot the system
+		clc           		; clear the carry flag
+	        sei			; No Interrupt now baby
+		ldx #$FF 		; Let's push that stack pointer right up there
+		txs
+                lda #$80
+                sta $00
+                lda #$00
+                sta $08
+                inc a
+                sta $09
+                inc a
+                sta $0A
+                inc a
+                sta $0B
+                inc a
+                sta $0C
+                inc a
+                sta $0D
+                inc a
+                sta $0E 
+                inc a
+                sta $0F
+                lda #$20 
+                sta $0A            ; Assign the External RAM for S
+                lda #$00
+                sta $00            ; Disable edit
 
-CODEC_WAIT_FINISH
-CODEC_Not_Finished:
-            lda CODEC_CTRL
-            and #$01
-            cmp #$01 
-            beq CODEC_Not_Finished
-            rts 
+                lda #$FF
+                ; setup the EDGE Trigger 
+                sta interrupt.EDGE_REG0
+                sta interrupt.EDGE_REG1
+                sta interrupt.EDGE_REG2                
+                ; mask all Interrupt @ This Point
+                sta interrupt.MASK_REG0
+                sta interrupt.MASK_REG1
+                sta interrupt.MASK_REG2
+                ; clear both pending interrupt
+                lda interrupt.PENDING_REG0
+                sta interrupt.PENDING_REG0
+                lda interrupt.PENDING_REG1
+                sta interrupt.PENDING_REG1    
+                lda interrupt.PENDING_REG2
+                sta interrupt.PENDING_REG3                 
+.send
 
+.section system
+
+setIOPage0		
+		
+		lda $01		; Load Page Control Register
+		and #$FC    ; isolate 2 first bit 
+		sta $01     ; Write back to make sure we are on page 0
+		rts 
+
+setIOPage1		
+		lda #$01		; Load Page Control Register
+		;and #$FC    ; isolate 2 first bit 
+		;ora #$01
+		sta $01     ; Write back to make sure we are on page 0
+		rts 
+
+setIOPage2		
+		lda $01		; Load Page Control Register
+		and #$FC    ; isolate 2 first bit 
+		ora #$02
+		sta $01     ; Write back to make sure we are on page 0
+		rts 
+
+setIOPage3		
+		lda $01		; Load Page Control Register
+		and #$FC    ; isolate 2 first bit 
+		ora #$03
+		sta $01     ; Write back to make sure we are on page 0
+		rts 
+
+.send ; end section system
 .endn ; end namespace system

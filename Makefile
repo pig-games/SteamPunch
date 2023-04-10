@@ -10,11 +10,15 @@ OUTDIR = build
 BLD_NAME = $(OUTDIR)/$(NAME).bin
 
 SRC = 	src/main.asm \
+		src/init.asm \
 		src/system.asm \
 		src/tiles.asm \
+		src/display.asm \
+		src/audio.asm \
 		src/defs/interrupt.asm \
 		src/defs/tinyvicky.asm \
-		src/defs/io.asm 
+		src/defs/io.asm
+
 BINS =  tile_data/tileset.bin \
   	    tile_data/tileset.pal.bin		
 

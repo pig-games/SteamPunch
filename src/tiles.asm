@@ -1,48 +1,47 @@
 .cpu "65c02"
 
 tiles        .namespace
+
 TileMapXSize = 54
 TileMapYSize = 22
 
 ; Located in High Memory since Vicky can Reference them directly.
 
-* = $010000
-TileMapLayer0
+.section tilelayer0
 .include "../tile_data/TopLayer.txm"
+.send
 
-
-* = $010A00
-TileMapLayer1
+.section tilelayer1
 .include "../tile_data/Paralax1.txm"
+.send
 
-* = $011400
-TileMapLayer2
+.section tilelayer2
 .include "../tile_data/Paralax2.txm"
+.send
 
 ; $012000 - $38FFF (Size: 0x27000) 156K
 
-* = $012000
-TileSetData
+.section tilesetdata
 .binary "../tile_data/tileset.bin"
+.send
 
-; In the CPU Memory Zone
-* = $EF00
-TileMapPalette
+.section tilesetpalette
 .binary "../tile_data/tileset.pal.bin"
+.send
 
 ; Start of actual tile demo code
 
-* = $F000
+.section        demo
 
 start
-                jsr setIOPage0
+                jsr system.setIOPage0
 
                 stz io.joy.VIA0_DRB    ; Make Sure the VIA is in Read Mode for the Joystick 
                 stz io.joy.VIA0_DRA    ; Make Sure the VIA is in Read Mode for the Joystick
 
                 ; put some values in the LUT for graphic use
                 ; Go in Page 1 to Setup LUT
-                jsr setIOPage1
+                jsr system.setIOPage1
         
                 ldx #$00
 setLUT0_4_Tiles
@@ -52,7 +51,7 @@ setLUT0_4_Tiles
                 cpx #196
                 bne setLUT0_4_Tiles
                 ; Go in Page 0 to program the rest
-                jsr SetIOPage0
+                jsr system.SetIOPage0
 
                 ; Set the Tile Layer Map 0 Pointer: $10000
                 stz vky.tile.T0_START_ADDY_L
@@ -246,5 +245,5 @@ forwardY
                 lda #$00
                 sta io.joy.CNT_0        
                 rts 
-
-        .endn        ; end namespace .tiles
+.send        ; end section demo
+.endn        ; end namespace tiles
