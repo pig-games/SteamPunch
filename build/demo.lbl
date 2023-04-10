@@ -1,5 +1,4 @@
 TileMapLayer2	= $001400
-Demo		= $f000
 TileMapLayer0	= $000000
 TileMapLayer1	= $000a00
 RVECTOR_IRQ	= $fffe

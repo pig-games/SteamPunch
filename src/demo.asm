@@ -1,6 +1,6 @@
 .cpu "65c02"
 
-tiles        .namespace
+demo        .namespace
 
 TileMapXSize = 54
 TileMapYSize = 22

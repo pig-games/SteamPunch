@@ -26,7 +26,7 @@ DATA		.dsection data
 TileMapPalette	.dsection tilesetpalette
 
 * = $F000	; demo code
-Demo		.dsection demo
+		.dsection demo
 
 * = $FE00
 IRQ		.dsection irq
@@ -55,7 +55,7 @@ TileSetData	.dsection tilesetdata
                 phy
                 php
 
-                jsr tiles.InterruptHandlerJoystick
+                jsr demo.InterruptHandlerJoystick
 
                 plp 
                 ply

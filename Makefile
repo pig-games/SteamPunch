@@ -12,7 +12,7 @@ BLD_NAME = $(OUTDIR)/$(NAME).bin
 SRC = 	src/main.asm \
 		src/init.asm \
 		src/system.asm \
-		src/tiles.asm \
+		src/demo.asm \
 		src/display.asm \
 		src/audio.asm \
 		src/defs/interrupt.asm \

@@ -40,7 +40,7 @@ init		.namespace
                 sta vky.layer.CTRL_REG0
                 lda #$06
                 sta vky.layer.CTRL_REG1
-                jsr tiles.start
+                jsr demo.start
 
                 ; Enable the SOF interrupt
                 cli 
