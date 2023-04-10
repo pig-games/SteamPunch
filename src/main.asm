@@ -20,12 +20,12 @@ Boot 		.dsection boot
 		.dsection audio
 
 * = $E800
-DATA		.dsection data
+		.dsection data
 
 * = $EF00
-TileMapPalette	.dsection tilesetpalette
+		.dsection tilesetpalette
 
-* = $F000	; demo code
+* = $F000	
 		.dsection demo
 
 * = $FE00
@@ -35,19 +35,19 @@ IRQ		.dsection irq
 NMI		.dsection nmi
 
 * = $FFFA
-IVEC		.dsection ivec
+		.dsection ivec
 
 * = $010000
-TileMapLayer0   .dsection tilelayer0
+		.dsection tilelayer0
 
 * = $010A00
-TileMapLayer1	.dsection tilelayer1
+		.dsection tilelayer1
 
 * = $011400
-TileMapLayer2	.dsection tilelayer2
+		.dsection tilelayer2
 
 * = $012000
-TileSetData	.dsection tilesetdata
+		.dsection tilesetdata
 
 .section	irq
                 pha

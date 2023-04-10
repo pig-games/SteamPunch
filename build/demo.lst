@@ -1,7 +1,7 @@
 
 ; 64tass Turbo Assembler Macro V1.56.2625 listing file
 ; 64tass --long-address -b -fc -o build/demo.bin --list build/demo.lst --labels=build/demo.lbl src/main.asm src/init.asm src/system.asm src/demo.asm src/display.asm src/audio.asm src/defs/interrupt.asm src/defs/tinyvicky.asm src/defs/io.asm
-; Mon Apr 10 17:10:57 2023
+; Mon Apr 10 17:24:10 2023
 
 ;Offset	;PC	;Hex		;Monitor	;Source
 
@@ -11,15 +11,8 @@
 .0100						Stack
 >0100								.fill $100
 .e000						Boot
-.e800						DATA
-.ef00						TileMapPalette
 .fe00						IRQ
 .ff00						NMI
-.fffa						IVEC
-.010000	0000					TileMapLayer0
-.010a00	0a00					TileMapLayer1
-.011400	1400					TileMapLayer2
-.012000	2000					TileSetData
 .fe00		48		pha		                pha
 .fe01		da		phx		                phx
 .fe02		5a		phy		                phy
@@ -177,6 +170,7 @@
 
 =54						TileMapXSize = 54
 =22						TileMapYSize = 22
+.010000	0000					TileMapLayer0
 
 ;******  Processing file: src/../tile_data/TopLayer.txm
 
@@ -343,6 +337,7 @@
 
 ;******  Return to file: src/demo.asm
 
+.010a00	0a00					TileMapLayer1
 
 ;******  Processing file: src/../tile_data/Paralax1.txm
 
@@ -482,6 +477,7 @@
 
 ;******  Return to file: src/demo.asm
 
+.011400	1400					TileMapLayer2
 
 ;******  Processing file: src/../tile_data/Paralax2.txm
 
@@ -598,7 +594,7 @@
 
 ;******  Return to file: src/demo.asm
 
->012000	2000	00 00 00 00 00 00 00 00		.binary "../tile_data/tileset.bin"
+>012000	2000	00 00 00 00 00 00 00 00		TileSetData          .binary "../tile_data/tileset.bin"
 >012008	2008	00 00 00 00 00 00 00 00 01 02 01 03 04 05 01 02
 >012018	2018	02 02 02 02 06 04 02 02 01 02 01 03 04 05 01 02
 >012028	2028	02 02 02 02 06 04 02 02 01 02 01 03 04 05 01 02
@@ -9362,7 +9358,7 @@
 >038fa8	8fa8	00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ;		...repeated 4 times (64 bytes)...
 >038ff8	8ff8	00 00 00 00 00 00 00 00
->ef00		00 00 00 ff 3d 20 49 ff		.binary "../tile_data/tileset.pal.bin"
+>ef00		00 00 00 ff 3d 20 49 ff		TileMapPalette	     .binary "../tile_data/tileset.pal.bin"
 >ef08		21 17 23 ff 41 36 bf ff 27 56 d6 ff 48 2e 7c ff
 >ef18		49 a2 ea ff 7e aa e4 ff 6f 9c 3b ff 72 75 2e ff
 >ef28		59 e0 3a ff 5c c5 3b ff 42 31 17 ff 7b 83 d7 ff

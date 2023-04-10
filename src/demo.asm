@@ -8,25 +8,25 @@ TileMapYSize = 22
 ; Located in High Memory since Vicky can Reference them directly.
 
 .section tilelayer0
-.include "../tile_data/TopLayer.txm"
+TileMapLayer0        .include "../tile_data/TopLayer.txm"
 .send
 
 .section tilelayer1
-.include "../tile_data/Paralax1.txm"
+TileMapLayer1        .include "../tile_data/Paralax1.txm"
 .send
 
 .section tilelayer2
-.include "../tile_data/Paralax2.txm"
+TileMapLayer2	     .include "../tile_data/Paralax2.txm"
 .send
 
 ; $012000 - $38FFF (Size: 0x27000) 156K
 
 .section tilesetdata
-.binary "../tile_data/tileset.bin"
+TileSetData          .binary "../tile_data/tileset.bin"
 .send
 
 .section tilesetpalette
-.binary "../tile_data/tileset.pal.bin"
+TileMapPalette	     .binary "../tile_data/tileset.pal.bin"
 .send
 
 ; Start of actual tile demo code
@@ -246,4 +246,4 @@ forwardY
                 sta io.joy.CNT_0        
                 rts 
 .send        ; end section demo
-.endn        ; end namespace tiles
+.endn        ; end namespace demo
